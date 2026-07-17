@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mechanical Choice Panel</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: #f6f2d8;
+      background: linear-gradient(135deg, #06070b, #182033 45%, #0b1220);
+      overflow: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.14), transparent 24%),
+        radial-gradient(circle at 80% 12%, rgba(120,120,255,0.16), transparent 28%),
+        radial-gradient(circle at 50% 80%, rgba(0,255,214,0.12), transparent 24%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .panel {
+      position: relative;
+      z-index: 2;
+      width: min(90vw, 760px);
+      padding: 32px;
+      border-radius: 24px;
+      background: rgba(9, 14, 28, 0.9);
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(10px);
+    }
+
+    .input-box {
+      width: 100%;
+      max-width: 320px;
+      padding: 12px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(143, 255, 228, 0.35);
+      background: rgba(255,255,255,0.07);
+      color: #fefefe;
+      font-size: 1rem;
+      margin: 10px 0 16px;
+      outline: none;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #8fffe4;
+      text-shadow: 0 0 10px rgba(143, 255, 228, 0.25);
+    }
+
+    p {
+      margin: 0 0 24px;
+      line-height: 1.6;
+      color: #d9e3f0;
+    }
+
+    .choices {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 12px 22px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .choice-btn {
+      background: linear-gradient(135deg, #30d8c0, #1b8a8f);
+      color: #05231f;
+    }
+
+    .choice-btn.secondary {
+      background: linear-gradient(135deg, #ffb44f, #ff7f3f);
+      color: #2f1400;
+    }
+
+    .screen {
+      margin-top: 12px;
+      min-height: 300px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .screen:hover {
+      transform: translateY(-2px);
+      box-shadow: inset 0 0 15px rgba(143, 255, 228, 0.08);
+    }
+
+    .welcome-card {
+      max-width: 520px;
+    }
+
+    .welcome-card h2 {
+      margin-top: 0;
+      font-size: 1.3rem;
+      color: #8fffe4;
+    }
+
+    .calculator {
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .display {
+      padding: 16px;
+      margin-bottom: 12px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #07111d, #10243a);
+      border: 1px solid rgba(255,255,255,0.12);
+      text-align: right;
+      font-size: 1.8rem;
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      color: #fefef0;
+      overflow: hidden;
+      word-break: break-all;
+      box-shadow: inset 0 0 12px rgba(0,0,0,0.35);
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .calc-btn {
+      padding: 14px 0;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      font-size: 1rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+    }
+
+    .calc-btn:active {
+      transform: scale(0.97);
+    }
+
+    .calc-btn.operator {
+      background: rgba(255, 180, 79, 0.85);
+      color: #2b1a00;
+    }
+
+    .calc-btn.equal {
+      background: linear-gradient(135deg, #6effb3, #28b979);
+      color: #052e1c;
+    }
+
+    .movie-card {
+      padding: 24px 28px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(255, 180, 79, 0.18), rgba(255, 127, 63, 0.22));
+      border: 1px solid rgba(255, 180, 79, 0.25);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.2);
+      animation: popIn 0.35s ease;
+    }
+
+    .movie-card h2 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      color: #ffcf7a;
+      text-shadow: 0 0 10px rgba(255, 180, 79, 0.25);
+    }
+
+    .movie-card p {
+      margin: 0;
+      color: #f7f2c8;
+    }
+
+    @keyframes popIn {
+      from {
+        transform: scale(0.94);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .screw, .gear {
+      position: fixed;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.85;
+      animation: fall linear infinite;
+    }
+
+    .screw {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 25% 25%, #fef2c7, #a67a3f 60%, #6d4b1c);
+      border: 2px solid #34220c;
+      box-shadow: inset 0 0 3px rgba(255,255,255,0.8);
+    }
+
+    .screw::before {
+      content: "";
+      position: absolute;
+      inset: 3px;
+      border: 2px solid rgba(0,0,0,0.25);
+      border-radius: 50%;
+    }
+
+    .screw::after {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      background: linear-gradient(90deg, transparent 40%, rgba(255,255,255,0.45) 50%, transparent 60%);
+      transform: rotate(45deg);
+    }
+
+    .gear {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 3px solid #7f8a90;
+      background: radial-gradient(circle, #dce6ee 0 52%, #8a9399 100%);
+      animation-name: fall, spin;
+      animation-duration: var(--duration), 2s;
+      animation-timing-function: linear, linear;
+      animation-iteration-count: infinite, infinite;
+    }
+
+    .gear::before {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      border: 2px solid rgba(0,0,0,0.3);
+      border-radius: 50%;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translate3d(0, -12vh, 0) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.9;
+      }
+      100% {
+        transform: translate3d(0, 112vh, 0) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <h1>JOANES JERVES SYSTEM</h1>
+    <p>Choose your path, Joanes Jerves style.</p>
+
+    <div class="screen" id="screen">
+      <div class="welcome-card">
+        <h2>Welcome to Joanes Systems</h2>
+        <p>Enter your name to begin. Then Joanes Jerves will ask what you want to do.</p>
+        <input class="input-box" id="nameInput" type="text" placeholder="Enter your name" />
+        <div class="choices">
+          <button class="choice-btn" id="startBtn">Start</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const screen = document.getElementById("screen");
+    const startBtn = document.getElementById("startBtn");
+    const nameInput = document.getElementById("nameInput");
+
+    function showWelcomeScreen() {
+      screen.innerHTML = `
+        <div class="welcome-card">
+          <h2>Welcome to Joanes Systems</h2>
+          <p>Enter your name to begin. Then Joanes Jerves will ask what you want to do.</p>
+          <input class="input-box" id="nameInput" type="text" placeholder="Enter your name" />
+          <div class="choices">
+            <button class="choice-btn" id="startBtn">Start</button>
+          </div>
+        </div>
+      `;
+
+      const newStartBtn = document.getElementById("startBtn");
+      const newNameInput = document.getElementById("nameInput");
+
+      newStartBtn.addEventListener("click", () => {
+        const name = newNameInput.value.trim();
+        if (!name) {
+          alert("Please enter your name first.");
+          return;
+        }
+
+        screen.innerHTML = `
+          <div class="welcome-card">
+            <h2>Welcome, ${name}!</h2>
+            <p>Joanes Systems is ready. What would you like to do?</p>
+            <div class="choices">
+              <button class="choice-btn" id="calculatorBtn">Use Calculator</button>
+              <button class="choice-btn secondary" id="movieBtn">Watch Movie</button>
+            </div>
+          </div>
+        `;
+
+        document.getElementById("calculatorBtn").addEventListener("click", showCalculator);
+        document.getElementById("movieBtn").addEventListener("click", showMovie);
+      });
+    }
+
+    function createMechanicalRain() {
+      const pieces = 28;
+      for (let i = 0; i < pieces; i += 1) {
+        const piece = document.createElement("div");
+        const type = Math.random() > 0.6 ? "gear" : "screw";
+        piece.className = type;
+        piece.style.left = `${Math.random() * 100}vw`;
+        piece.style.top = `-${Math.random() * 20}vh`;
+        piece.style.animationDuration = `${6 + Math.random() * 6}s`;
+        piece.style.setProperty("--duration", `${6 + Math.random() * 6}s`);
+        document.body.appendChild(piece);
+      }
+    }
+
+    function showCalculator() {
+      screen.innerHTML = `
+        <div class="calculator">
+          <div class="display" id="display">0</div>
+          <div class="buttons">
+            <button class="calc-btn" data-value="C">C</button>
+            <button class="calc-btn" data-value="←">←</button>
+            <button class="calc-btn" data-value="%">%</button>
+            <button class="calc-btn operator" data-value="/">÷</button>
+
+            <button class="calc-btn" data-value="7">7</button>
+            <button class="calc-btn" data-value="8">8</button>
+            <button class="calc-btn" data-value="9">9</button>
+            <button class="calc-btn operator" data-value="*">×</button>
+
+            <button class="calc-btn" data-value="4">4</button>
+            <button class="calc-btn" data-value="5">5</button>
+            <button class="calc-btn" data-value="6">6</button>
+            <button class="calc-btn operator" data-value="-">−</button>
+
+            <button class="calc-btn" data-value="1">1</button>
+            <button class="calc-btn" data-value="2">2</button>
+            <button class="calc-btn" data-value="3">3</button>
+            <button class="calc-btn operator" data-value="+">+</button>
+
+            <button class="calc-btn" data-value="0">0</button>
+            <button class="calc-btn" data-value=".">.</button>
+            <button class="calc-btn equal" data-value="=">=</button>
+            <button class="calc-btn operator" data-value="/">÷</button>
+          </div>
+        </div>
+      `;
+
+      const display = document.getElementById("display");
+      let expression = "";
+      let currentValue = "0";
+
+      function updateDisplay() {
+        display.textContent = currentValue;
+      }
+
+      screen.querySelectorAll(".calc-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+          const value = button.dataset.value;
+
+          if (value === "C") {
+            expression = "";
+            currentValue = "0";
+          } else if (value === "←") {
+            currentValue = currentValue.length > 1 ? currentValue.slice(0, -1) : "0";
+          } else if (["+", "-", "*", "/"].includes(value)) {
+            if (expression && expression.endsWith(/[+\-*/]$/)) {
+              expression = expression.slice(0, -1) + value;
+            } else {
+              expression += `${currentValue}${value}`;
+              currentValue = "0";
+            }
+          } else if (value === "=") {
+            try {
+              const fullExpression = `${expression}${currentValue}`.replace(/×/g, "*").replace(/÷/g, "/");
+              const result = Function(`return ${fullExpression}`)();
+              currentValue = Number.isFinite(result) ? String(result) : "Error";
+              expression = "";
+            } catch (error) {
+              currentValue = "Error";
+              expression = "";
+            }
+          } else if (value === "%") {
+            currentValue = String(Number(currentValue) / 100);
+          } else {
+            if (currentValue === "0" || currentValue === "Error") {
+              currentValue = value;
+            } else {
+              currentValue += value;
+            }
+          }
+
+          updateDisplay();
+        });
+      });
+    }
+
+    function showMovie() {
+      screen.innerHTML = `
+        <div class="movie-card">
+          <h2>Goodbye, lazy!</h2>
+          <p>The lights dim, the screen fades, and the workshop goes quiet.</p>
+          <p>Come back when you are ready to build something brilliant.</p>
+        </div>
+      `;
+    }
+
+    showWelcomeScreen();
+    createMechanicalRain();
+  </script>
+</body>
+</html>
